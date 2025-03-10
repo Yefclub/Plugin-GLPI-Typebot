@@ -6,16 +6,27 @@ define('PLUGIN_GLPITYPEBOTCHAT_VERSION', '1.0.0');
  * Init the hooks of the plugins -Needed
  */
 function plugin_init_glpitypebotchat() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
    
-   // Adiciona o hook para incluir o chat na interface
+   // Adiciona o hook para incluir o chat em todas as páginas
    if (Session::getLoginUserID()) {
+      // Adiciona CSS e JavaScript
       $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = 'js/glpitypebotchat.js';
       $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = 'css/glpitypebotchat.css';
-      $PLUGIN_HOOKS['display_central']['glpitypebotchat'] = 'plugin_glpitypebotchat_display_central';
+      
+      // Adiciona o menu na barra lateral
+      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
+         'config' => 'PluginGlpitypebotchatConfig'
+      ];
+      
+      // Adiciona a página de configuração
       $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
+      
+      // Hook para adicionar o chat em todas as páginas
+      $PLUGIN_HOOKS['display_login']['glpitypebotchat'] = true;
+      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'][] = 'js/glpitypebotchat.js';
    }
 }
 
@@ -26,9 +37,9 @@ function plugin_version_glpitypebotchat() {
    return [
       'name'           => 'GLPI Typebot Chat',
       'version'        => PLUGIN_GLPITYPEBOTCHAT_VERSION,
-      'author'         => 'Seu Nome',
+      'author'         => 'Taskivus',
       'license'        => 'GPLv3+',
-      'homepage'       => '',
+      'homepage'       => 'https://taskivus.com',
       'requirements'   => [
          'glpi' => [
             'min' => '10.0.0',
@@ -37,7 +48,8 @@ function plugin_version_glpitypebotchat() {
          'php' => [
             'min' => '7.4.0'
          ]
-      ]
+      ],
+      'minGlpiVersion' => '10.0.0'
    ];
 }
 

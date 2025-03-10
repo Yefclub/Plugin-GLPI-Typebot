@@ -5,6 +5,7 @@
  */
 function plugin_glpitypebotchat_install() {
     PluginGlpitypebotchatConfig::install();
+    PluginGlpitypebotchatMenu::addRightsToSession();
     return true;
 }
 
@@ -13,6 +14,7 @@ function plugin_glpitypebotchat_install() {
  */
 function plugin_glpitypebotchat_uninstall() {
     PluginGlpitypebotchatConfig::uninstall();
+    PluginGlpitypebotchatMenu::removeRightsFromSession();
     return true;
 }
 
@@ -21,5 +23,6 @@ function plugin_glpitypebotchat_uninstall() {
  */
 function plugin_glpitypebotchat_purge() {
     PluginGlpitypebotchatConfig::uninstall();
+    PluginGlpitypebotchatMenu::removeRightsFromSession();
     return true;
 } 

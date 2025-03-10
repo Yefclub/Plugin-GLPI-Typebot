@@ -3,7 +3,7 @@
     <name>GLPI Typebot Chat</name>
     <key>glpitypebotchat</key>
     <state>stable</state>
-    <logo>https://raw.githubusercontent.com/seu-usuario/glpitypebotchat/main/pics/logo.png</logo>
+    <logo>pics/typebot.png</logo>
     <description>
         <short>
             <pt_BR>Plugin para integração do Typebot com GLPI</pt_BR>
@@ -12,12 +12,12 @@
             <pt_BR>Este plugin permite a integração do Typebot com o GLPI, adicionando um chat interativo na interface.</pt_BR>
         </long>
     </description>
-    <homepage>https://github.com/seu-usuario/glpitypebotchat</homepage>
-    <download>https://github.com/seu-usuario/glpitypebotchat/releases</download>
-    <issues>https://github.com/seu-usuario/glpitypebotchat/issues</issues>
-    <readme>https://github.com/seu-usuario/glpitypebotchat/blob/main/README.md</readme>
+    <homepage>https://taskivus.com</homepage>
+    <download>https://github.com/taskivus/glpitypebotchat/releases</download>
+    <issues>https://github.com/taskivus/glpitypebotchat/issues</issues>
+    <readme>https://github.com/taskivus/glpitypebotchat/blob/main/README.md</readme>
     <authors>
-        <author>Seu Nome</author>
+        <author>Taskivus</author>
     </authors>
     <versions>
         <version>
