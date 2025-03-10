@@ -7,6 +7,10 @@ define('PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI', '10.0.0');
 // Maximum GLPI version, exclusive
 define('PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI', '11.0.0');
 
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access this file directly");
+}
+
 /**
  * Init the hooks of the plugins -Needed
  */
@@ -16,8 +20,8 @@ function plugin_init_glpitypebotchat() {
    $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
    
    // Hook para adicionar CSS e JavaScript em todas as páginas
-   $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = 'css/glpitypebotchat.css';
-   $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = 'js/glpitypebotchat.js';
+   $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = ['css/glpitypebotchat.css'];
+   $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = ['js/glpitypebotchat.js'];
    
    if (Session::getLoginUserID()) {
       // Adiciona o botão na barra de navegação principal
@@ -33,14 +37,11 @@ function plugin_init_glpitypebotchat() {
       $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
       
       // Hook para adicionar o menu
-      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
-         'admin' => 'PluginGlpitypebotchatMenu'
-      ];
-      
-      // Adiciona o botão na barra de navegação
-      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
-         'utilities' => 'PluginGlpitypebotchatMenu'
-      ];
+      if (Session::haveRight('config', UPDATE)) {
+         $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
+            'admin' => 'PluginGlpitypebotchatMenu'
+         ];
+      }
    }
 }
 
@@ -63,7 +64,7 @@ function plugin_version_glpitypebotchat() {
             'min' => '7.4.0'
          ]
       ],
-      'picto' => 'fas fa-comments' // Ícone para o plugin
+      'picto' => 'fas fa-comments'
    ];
 }
 
@@ -71,14 +72,15 @@ function plugin_version_glpitypebotchat() {
  * Check pre-requisites before install
  */
 function plugin_glpitypebotchat_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, 'lt')
-      || version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI, 'ge')) {
-      echo "Este plugin requer GLPI >= " . PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI . " e < " . PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI;
+   if (!method_exists('Plugin', 'messageIncompatible')) {
+      $version = PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI;
+      echo "Este plugin requer GLPI >= $version";
       return false;
    }
    
-   if (version_compare(PHP_VERSION, '7.4.0', 'lt')) {
-      echo "Este plugin requer PHP >= 7.4.0";
+   if (version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, 'lt')
+      || version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI, 'ge')) {
+      echo Plugin::messageIncompatible('core', PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI);
       return false;
    }
    
@@ -89,5 +91,12 @@ function plugin_glpitypebotchat_check_prerequisites() {
  * Check configuration
  */
 function plugin_glpitypebotchat_check_config($verbose = false) {
-   return true;
+   if (true) {
+      return true;
+   }
+   
+   if ($verbose) {
+      echo 'Installed / not configured';
+   }
+   return false;
 } 
