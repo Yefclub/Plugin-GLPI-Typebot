@@ -3,7 +3,7 @@
     <name>GLPI Typebot Chat</name>
     <key>glpitypebotchat</key>
     <state>stable</state>
-    <logo>pics/typebot.png</logo>
+    <logo>pics/chat.png</logo>
     <description>
         <short>
             <pt_BR>Plugin para integração do Typebot com GLPI</pt_BR>
@@ -36,4 +36,7 @@
             <tag>Suporte</tag>
         </pt_BR>
     </tags>
+    <screenshots>
+        <screenshot>https://taskivus.com/plugins/glpitypebotchat/screenshots/chat.png</screenshot>
+    </screenshots>
 </root> 
