@@ -4,18 +4,37 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Não mostrar na página de chamados
-    if (window.location.href.indexOf('ticket.form.php') !== -1) {
+    // URL do plugin
+    let pluginBaseUrl = '';
+    const scripts = document.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+        const src = scripts[i].src;
+        if (src.includes('glpitypebotchat/js/glpitypebotchat.js')) {
+            pluginBaseUrl = src.split('js/glpitypebotchat.js')[0];
+            break;
+        }
+    }
+
+    if (!pluginBaseUrl) {
+        console.error('Não foi possível determinar a URL base do plugin');
         return;
     }
 
     // Busca as configurações do chat
-    fetch('../ajax/getconfig.php')
-        .then(response => response.json())
+    fetch(pluginBaseUrl + 'ajax/getconfig.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na resposta do servidor: ' + response.status);
+            }
+            return response.json();
+        })
         .then(config => {
             if (!config.is_active || !config.typebot_url) {
+                console.log('Chat desativado ou URL não configurada');
                 return;
             }
+
+            console.log('Configurações do chat carregadas com sucesso');
 
             // Cria o ícone do chat
             const chatIcon = document.createElement('div');
@@ -59,6 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     modal.classList.remove('active');
                 }
             });
+
+            // Expõe função global para abrir o chat
+            window.openTypebotChat = function() {
+                modal.classList.add('active');
+            };
+
+            console.log('Chat Typebot inicializado com sucesso');
         })
         .catch(error => {
             console.error('Erro ao carregar configurações do Typebot:', error);

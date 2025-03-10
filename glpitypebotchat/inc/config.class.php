@@ -32,6 +32,7 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
                 `typebot_url` varchar(255) NOT NULL,
                 `icon_position` varchar(20) DEFAULT 'bottom-right',
                 `is_active` tinyint(1) DEFAULT 1,
+                `welcome_message` text DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
             
@@ -41,8 +42,20 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
             $DB->insert($table, [
                 'typebot_url' => '',
                 'icon_position' => 'bottom-right',
-                'is_active' => 1
+                'is_active' => 1,
+                'welcome_message' => 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
             ]);
+        } else {
+            // Verifica se a coluna welcome_message existe
+            if (!$DB->fieldExists($table, 'welcome_message')) {
+                $query = "ALTER TABLE `$table` ADD COLUMN `welcome_message` text DEFAULT NULL";
+                $DB->query($query) or die($DB->error());
+                
+                // Atualiza valores existentes
+                $DB->update($table, [
+                    'welcome_message' => 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
+                ], ['id' => 1]);
+            }
         }
         return true;
     }
@@ -68,7 +81,8 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         return [
             'typebot_url' => $config->fields['typebot_url'] ?? '',
             'icon_position' => $config->fields['icon_position'] ?? 'bottom-right',
-            'is_active' => $config->fields['is_active'] ?? 1
+            'is_active' => $config->fields['is_active'] ?? 1,
+            'welcome_message' => $config->fields['welcome_message'] ?? 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
         ];
     }
 
@@ -107,45 +121,105 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
     static function showConfigForm() {
         $config = self::getConfig();
         
-        echo "<form name='form' action='../plugins/glpitypebotchat/front/config.form.php' method='post'>";
-        echo "<div class='center' id='tabsbody'>";
-        echo "<table class='tab_cadre_fixe'>";
+        echo "<div class='card'>";
+        echo "<div class='card-header'>";
+        echo "<h3>" . __('Configurações do Typebot Chat', 'glpitypebotchat') . "</h3>";
+        echo "</div>";
+        echo "<div class='card-body'>";
         
-        echo "<tr><th colspan='2'>" . __('Configurações do Typebot Chat', 'glpitypebotchat') . "</th></tr>";
+        // Mensagem de boas-vindas
+        echo "<div class='alert alert-info mb-4'>";
+        echo "<h4><i class='fas fa-info-circle'></i> " . __('Bem-vindo ao Plugin Typebot Chat!', 'glpitypebotchat') . "</h4>";
+        echo "<p>" . __('Este plugin integra o Typebot com o GLPI, permitindo adicionar um chat interativo na interface.', 'glpitypebotchat') . "</p>";
+        echo "<p>" . __('Após a configuração, o ícone do chat aparecerá em todas as páginas do GLPI, e também será adicionado um botão na barra de navegação.', 'glpitypebotchat') . "</p>";
+        echo "</div>";
         
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('URL do Typebot', 'glpitypebotchat') . "</td>";
-        echo "<td><input type='text' name='typebot_url' value='" . $config['typebot_url'] . "' size='50'></td>";
-        echo "</tr>";
+        // Formulário de configuração
+        echo "<form name='form' action='../plugins/glpitypebotchat/front/config.form.php' method='post' class='mb-4'>";
+        echo "<div class='card border-secondary mb-4'>";
+        echo "<div class='card-header bg-secondary text-white'>";
+        echo "<h4 class='m-0'>" . __('Configurações Básicas', 'glpitypebotchat') . "</h4>";
+        echo "</div>";
+        echo "<div class='card-body'>";
         
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Posição do Ícone', 'glpitypebotchat') . "</td>";
-        echo "<td>";
-        echo "<select name='icon_position'>";
-        $positions = ['bottom-right' => __('Inferior Direito', 'glpitypebotchat'),
-                     'bottom-left' => __('Inferior Esquerdo', 'glpitypebotchat')];
+        // URL do Typebot
+        echo "<div class='mb-3 row'>";
+        echo "<label for='typebot_url' class='col-sm-3 col-form-label'>" . __('URL do Typebot', 'glpitypebotchat') . "</label>";
+        echo "<div class='col-sm-9'>";
+        echo "<input type='text' class='form-control' id='typebot_url' name='typebot_url' value='" . $config['typebot_url'] . "' required>";
+        echo "<small class='form-text text-muted'>" . __('URL completa do seu bot do Typebot (ex: https://bot.typebot.io/meu-bot)', 'glpitypebotchat') . "</small>";
+        echo "</div>";
+        echo "</div>";
+        
+        // Posição do Ícone
+        echo "<div class='mb-3 row'>";
+        echo "<label for='icon_position' class='col-sm-3 col-form-label'>" . __('Posição do Ícone', 'glpitypebotchat') . "</label>";
+        echo "<div class='col-sm-9'>";
+        echo "<select class='form-select' id='icon_position' name='icon_position'>";
+        $positions = [
+            'bottom-right' => __('Inferior Direito', 'glpitypebotchat'),
+            'bottom-left' => __('Inferior Esquerdo', 'glpitypebotchat')
+        ];
         foreach ($positions as $key => $val) {
             echo "<option value='$key' " . ($config['icon_position'] == $key ? 'selected' : '') . ">$val</option>";
         }
         echo "</select>";
-        echo "</td>";
-        echo "</tr>";
-        
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('Ativar Chat', 'glpitypebotchat') . "</td>";
-        echo "<td>";
-        echo "<input type='checkbox' name='is_active' " . ($config['is_active'] ? 'checked' : '') . ">";
-        echo "</td>";
-        echo "</tr>";
-        
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2' class='center'>";
-        echo "<input type='submit' name='update' class='submit' value='" . __('Salvar', 'glpitypebotchat') . "'>";
-        echo "</td>";
-        echo "</tr>";
-        
-        echo "</table>";
         echo "</div>";
+        echo "</div>";
+        
+        // Mensagem de boas-vindas
+        echo "<div class='mb-3 row'>";
+        echo "<label for='welcome_message' class='col-sm-3 col-form-label'>" . __('Mensagem de Boas-vindas', 'glpitypebotchat') . "</label>";
+        echo "<div class='col-sm-9'>";
+        echo "<textarea class='form-control' id='welcome_message' name='welcome_message' rows='3'>" . $config['welcome_message'] . "</textarea>";
+        echo "<small class='form-text text-muted'>" . __('Esta mensagem será exibida quando o usuário abrir o chat pela primeira vez.', 'glpitypebotchat') . "</small>";
+        echo "</div>";
+        echo "</div>";
+        
+        // Ativar Chat
+        echo "<div class='mb-3 row'>";
+        echo "<label for='is_active' class='col-sm-3 col-form-label'>" . __('Ativar Chat', 'glpitypebotchat') . "</label>";
+        echo "<div class='col-sm-9 d-flex align-items-center'>";
+        echo "<div class='form-check form-switch'>";
+        echo "<input class='form-check-input' type='checkbox' id='is_active' name='is_active' " . ($config['is_active'] ? 'checked' : '') . ">";
+        echo "</div>";
+        echo "</div>";
+        echo "</div>";
+        
+        echo "</div>";
+        echo "</div>";
+        
+        // Passo a passo
+        echo "<div class='card border-info mb-4'>";
+        echo "<div class='card-header bg-info text-white'>";
+        echo "<h4 class='m-0'>" . __('Passo a Passo para Configuração', 'glpitypebotchat') . "</h4>";
+        echo "</div>";
+        echo "<div class='card-body'>";
+        
+        echo "<ol class='list-group list-group-numbered mb-3'>";
+        echo "<li class='list-group-item'>" . __('Acesse <a href="https://typebot.io" target="_blank">typebot.io</a> e crie sua conta', 'glpitypebotchat') . "</li>";
+        echo "<li class='list-group-item'>" . __('Crie um novo bot ou escolha um existente', 'glpitypebotchat') . "</li>";
+        echo "<li class='list-group-item'>" . __('Após configurar seu bot, vá para a aba de "Compartilhar"', 'glpitypebotchat') . "</li>";
+        echo "<li class='list-group-item'>" . __('Copie a URL do seu bot e cole no campo "URL do Typebot" acima', 'glpitypebotchat') . "</li>";
+        echo "<li class='list-group-item'>" . __('Clique em "Salvar" para ativar o chat no GLPI', 'glpitypebotchat') . "</li>";
+        echo "</ol>";
+        
+        echo "<div class='alert alert-warning'>";
+        echo "<i class='fas fa-exclamation-triangle'></i> ";
+        echo __('Certifique-se de que seu bot está configurado para permitir o domínio do seu GLPI nas configurações do Typebot.', 'glpitypebotchat');
+        echo "</div>";
+        
+        echo "</div>";
+        echo "</div>";
+        
+        // Botão Salvar
+        echo "<div class='d-grid gap-2 d-md-flex justify-content-md-end'>";
+        echo "<input type='submit' name='update' class='btn btn-primary' value='" . __('Salvar', 'glpitypebotchat') . "'>";
+        echo "</div>";
+        
         Html::closeForm();
+        
+        echo "</div>";
+        echo "</div>";
     }
 } 

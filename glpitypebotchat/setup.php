@@ -20,7 +20,10 @@ function plugin_init_glpitypebotchat() {
    $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = 'js/glpitypebotchat.js';
    
    if (Session::getLoginUserID()) {
-      // Adiciona o menu na barra lateral
+      // Adiciona o botão na barra de navegação principal
+      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'][] = 'js/navbar.js';
+      
+      // Registra as classes
       Plugin::registerClass('PluginGlpitypebotchatConfig', [
          'addtabon' => ['Config']
       ]);
@@ -32,6 +35,11 @@ function plugin_init_glpitypebotchat() {
       // Hook para adicionar o menu
       $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
          'admin' => 'PluginGlpitypebotchatMenu'
+      ];
+      
+      // Adiciona o botão na barra de navegação
+      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
+         'utilities' => 'PluginGlpitypebotchatMenu'
       ];
    }
 }
@@ -54,7 +62,8 @@ function plugin_version_glpitypebotchat() {
          'php' => [
             'min' => '7.4.0'
          ]
-      ]
+      ],
+      'picto' => 'fas fa-comments' // Ícone para o plugin
    ];
 }
 
