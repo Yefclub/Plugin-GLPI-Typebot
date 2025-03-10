@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access this file directly");
+}
+
 class PluginGlpitypebotchatConfig extends CommonDBTM {
     static private $_instance = null;
     static $rightname = 'config';
@@ -80,5 +84,68 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         }
         
         return $config->add($values);
+    }
+
+    static function getTypeName($nb = 0) {
+        return __('Typebot Chat', 'glpitypebotchat');
+    }
+
+    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+        if ($item->getType() == 'Config') {
+            return self::getTypeName();
+        }
+        return '';
+    }
+
+    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+        if ($item->getType() == 'Config') {
+            self::showConfigForm();
+        }
+        return true;
+    }
+
+    static function showConfigForm() {
+        $config = self::getConfig();
+        
+        echo "<form name='form' action='../plugins/glpitypebotchat/front/config.form.php' method='post'>";
+        echo "<div class='center' id='tabsbody'>";
+        echo "<table class='tab_cadre_fixe'>";
+        
+        echo "<tr><th colspan='2'>" . __('Configurações do Typebot Chat', 'glpitypebotchat') . "</th></tr>";
+        
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('URL do Typebot', 'glpitypebotchat') . "</td>";
+        echo "<td><input type='text' name='typebot_url' value='" . $config['typebot_url'] . "' size='50'></td>";
+        echo "</tr>";
+        
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Posição do Ícone', 'glpitypebotchat') . "</td>";
+        echo "<td>";
+        echo "<select name='icon_position'>";
+        $positions = ['bottom-right' => __('Inferior Direito', 'glpitypebotchat'),
+                     'bottom-left' => __('Inferior Esquerdo', 'glpitypebotchat')];
+        foreach ($positions as $key => $val) {
+            echo "<option value='$key' " . ($config['icon_position'] == $key ? 'selected' : '') . ">$val</option>";
+        }
+        echo "</select>";
+        echo "</td>";
+        echo "</tr>";
+        
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Ativar Chat', 'glpitypebotchat') . "</td>";
+        echo "<td>";
+        echo "<input type='checkbox' name='is_active' " . ($config['is_active'] ? 'checked' : '') . ">";
+        echo "</td>";
+        echo "</tr>";
+        
+        echo "<tr class='tab_bg_1'>";
+        echo "<td colspan='2' class='center'>";
+        echo "<input type='submit' name='update' class='submit' value='" . __('Salvar', 'glpitypebotchat') . "'>";
+        echo "</td>";
+        echo "</tr>";
+        
+        echo "</table>";
+        echo "</div>";
+        Html::closeForm();
     }
 } 
