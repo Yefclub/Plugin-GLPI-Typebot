@@ -22,7 +22,7 @@ define('PLUGIN_GLPITYPEBOTCHAT_WEB_DIR', Plugin::getWebDir('glpitypebotchat'));
  */
 function plugin_version_glpitypebotchat() {
    return [
-      'name'           => 'GLPI Typebot Chat', // Nome sem tradução
+      'name'           => 'GLPI Typebot Chat',
       'version'        => PLUGIN_GLPITYPEBOTCHAT_VERSION,
       'author'         => 'Taskivus',
       'license'        => 'GPLv3+',
@@ -47,19 +47,16 @@ function plugin_version_glpitypebotchat() {
  * @return boolean
  */
 function plugin_glpitypebotchat_check_prerequisites() {
-   // Verifica versão do PHP
    if (version_compare(PHP_VERSION, '7.4.0', 'lt')) {
       echo "Este plugin requer PHP >= 7.4.0";
       return false;
    }
 
-   // Verifica extensão curl
    if (!extension_loaded('curl')) {
       echo "Este plugin requer a extensão PHP curl";
       return false;
    }
 
-   // Verifica versão do GLPI
    if (version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, 'lt')
       || version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI, 'ge')) {
       echo "Este plugin requer GLPI >= " . PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI . " e < " . PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI;
@@ -81,7 +78,7 @@ function plugin_glpitypebotchat_check_config() {
  * Initialize the plugin
  */
 function plugin_init_glpitypebotchat() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    // CSRF compliance
    $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
@@ -97,14 +94,20 @@ function plugin_init_glpitypebotchat() {
    // Adiciona CSS e JavaScript apenas se o usuário estiver logado
    if (Session::getLoginUserID()) {
       // Hook para adicionar CSS
-      $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = [
-         'css/glpitypebotchat.css'
-      ];
+      $PLUGIN_HOOKS['add_css']['glpitypebotchat'][] = 'css/glpitypebotchat.css';
       
       // Hook para adicionar JavaScript
-      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = [
-         'js/glpitypebotchat.js',
-         'js/navbar.js'
-      ];
+      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'][] = 'js/glpitypebotchat.js';
+      
+      // Adiciona o JavaScript da barra de navegação apenas em páginas específicas
+      if (!isset($_REQUEST['ajax'])) {
+         $PLUGIN_HOOKS['javascript']['glpitypebotchat'][] = [
+            'path' => 'js/navbar.js',
+            'options' => ['defer' => true]
+         ];
+      }
+      
+      // Adiciona o hook para o header, para garantir que os recursos sejam carregados corretamente
+      $PLUGIN_HOOKS['add_head']['glpitypebotchat'] = 'plugin_glpitypebotchat_add_head';
    }
 } 

@@ -1,16 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Função para tentar encontrar a barra de navegação
+    function findNavbar() {
+        return document.querySelector('.navbar-nav') || 
+               document.querySelector('#navbar-menu .nav') ||
+               document.querySelector('.navigation-menu');
+    }
+
     // Verifica se o botão já existe
     if (document.querySelector('#typebot-navbar-button')) {
         return;
     }
 
-    // Seleciona a barra de navegação
-    const navbar = document.querySelector('.navbar-nav');
+    // Tenta encontrar a barra de navegação
+    const navbar = findNavbar();
     if (!navbar) {
-        console.error('Barra de navegação não encontrada');
+        console.log('Barra de navegação ainda não disponível, tentando novamente...');
+        // Tenta novamente após um pequeno delay
+        setTimeout(function() {
+            const retryNavbar = findNavbar();
+            if (!retryNavbar) {
+                console.log('Barra de navegação não encontrada após retry');
+                return;
+            }
+            initializeButton(retryNavbar);
+        }, 1000);
         return;
     }
 
+    initializeButton(navbar);
+});
+
+function initializeButton(navbar) {
     // Cria o botão
     const navItem = document.createElement('li');
     navItem.className = 'nav-item';
@@ -28,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof window.openTypebotChat === 'function') {
             window.openTypebotChat();
         } else {
-            console.error('Função openTypebotChat não encontrada');
+            console.log('Função openTypebotChat não encontrada');
         }
     });
     
@@ -44,11 +64,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializa o tooltip
     try {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
     } catch (e) {
-        console.log('Erro ao inicializar tooltip:', e);
+        console.log('Tooltip não inicializado:', e);
     }
-}); 
+} 
