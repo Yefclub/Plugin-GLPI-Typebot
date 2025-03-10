@@ -21,13 +21,14 @@ Siga os passos abaixo para instalar corretamente o plugin no GLPI:
 Abra o terminal e copie o repositório para a pasta de plugins do GLPI:
 
 cd /var/www/html/glpi/plugins
-git clone https://github.com/seuusuario/glpi-typebot-chat.git
+wget https://github.com/Yefclub/Plugin-GLPI-Typebot/archive/refs/heads/main.zip
+unzip main.zip
 
 2️⃣ Renomear a pasta
 
 Renomeie a pasta clonada para o nome correto do plugin:
 
-mv glpi-typebot-chat glpitypebotchat
+mv Plugin-GLPI-Typebot-main/glpitypebotchat glpitypebotchat
 
 3️⃣ Ativar o Plugin no GLPI
 
@@ -38,15 +39,6 @@ Vá até Configurações > Plugins.
 Encontre o plugin GLPI Typebot Chat e clique em Instalar.
 
 Após a instalação, clique em Ativar.
-
-🔄 Atualização
-
-Para atualizar o plugin, execute os seguintes comandos dentro da pasta glpi/plugins/:
-
-cd /var/www/html/glpi/plugins/glpitypebotchat
-git pull origin main
-
-Depois, desative e reative o plugin no painel do GLPI para aplicar as alterações.
 
 📜 Licença
 
