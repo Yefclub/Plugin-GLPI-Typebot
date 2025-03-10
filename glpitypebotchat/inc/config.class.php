@@ -104,6 +104,69 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         return true;
     }
 
+    /**
+     * Método chamado após mostrar qualquer item
+     * Usado para injetar o chat em todas as páginas
+     */
+    static function postShowItem() {
+        if (!Session::getLoginUserID()) {
+            return;
+        }
+
+        $config = self::getConfig();
+        if (!$config['is_active'] || empty($config['typebot_url'])) {
+            return;
+        }
+
+        // Não mostrar na página de chamados
+        if (strpos($_SERVER['REQUEST_URI'], 'ticket.form.php') !== false) {
+            return;
+        }
+
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (document.querySelector('.typebot-chat-icon')) {
+                    return;
+                }
+
+                const chatIcon = document.createElement('div');
+                chatIcon.className = 'typebot-chat-icon " . $config['icon_position'] . "';
+                chatIcon.innerHTML = `
+                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+                        <path d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z'/>
+                    </svg>
+                `;
+
+                const modal = document.createElement('div');
+                modal.className = 'typebot-modal';
+                modal.innerHTML = `
+                    <div class='typebot-modal-content'>
+                        <div class='typebot-close'>×</div>
+                        <iframe src='" . $config['typebot_url'] . "' frameborder='0'></iframe>
+                    </div>
+                `;
+
+                document.body.appendChild(chatIcon);
+                document.body.appendChild(modal);
+
+                chatIcon.addEventListener('click', () => {
+                    modal.classList.add('active');
+                });
+
+                modal.querySelector('.typebot-close').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modal.classList.remove('active');
+                });
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        </script>";
+    }
+
     static function showConfigForm() {
         $config = self::getConfig();
         

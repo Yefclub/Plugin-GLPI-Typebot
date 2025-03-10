@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('GLPI_ROOT')) {
+   die("Sorry. You can't access this file directly");
+}
+
 class PluginGlpitypebotchatMenu extends CommonGLPI {
    static $rightname = 'config';
 
@@ -8,24 +12,30 @@ class PluginGlpitypebotchatMenu extends CommonGLPI {
    }
 
    static function getMenuContent() {
+      global $CFG_GLPI;
+      
       $menu = [];
-      if (Session::haveRight(static::$rightname, READ)) {
+      if (Config::canUpdate()) {
          $menu['title'] = self::getMenuName();
          $menu['page']  = '/plugins/glpitypebotchat/front/config.form.php';
          $menu['icon']  = 'fas fa-comments';
+         
+         $menu['options']['config']['title'] = __('Configurações', 'glpitypebotchat');
+         $menu['options']['config']['page']  = '/plugins/glpitypebotchat/front/config.form.php';
+         $menu['options']['config']['icon']  = 'fas fa-cog';
       }
       return $menu;
    }
 
    static function removeRightsFromSession() {
-      if (isset($_SESSION['glpimenu']['config']['types']['PluginGlpitypebotchatMenu'])) {
-         unset($_SESSION['glpimenu']['config']['types']['PluginGlpitypebotchatMenu']);
+      if (isset($_SESSION['glpimenu']['admin']['types']['PluginGlpitypebotchatMenu'])) {
+         unset($_SESSION['glpimenu']['admin']['types']['PluginGlpitypebotchatMenu']);
       }
    }
    
    static function addRightsToSession() {
-      if (Session::haveRight(static::$rightname, READ)) {
-         $_SESSION['glpimenu']['config']['types']['PluginGlpitypebotchatMenu'] = 'PluginGlpitypebotchatMenu';
+      if (Config::canUpdate()) {
+         $_SESSION['glpimenu']['admin']['types']['PluginGlpitypebotchatMenu'] = 'PluginGlpitypebotchatMenu';
       }
    }
 } 

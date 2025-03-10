@@ -11,27 +11,32 @@ define('PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI', '11.0.0');
  * Init the hooks of the plugins -Needed
  */
 function plugin_init_glpitypebotchat() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
    
    if (Session::getLoginUserID()) {
-      // Adiciona CSS e JavaScript
+      // Adiciona CSS e JavaScript em todas as páginas
       $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = 'css/glpitypebotchat.css';
-      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = [
-         'js/glpitypebotchat.js'
-      ];
+      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = 'js/glpitypebotchat.js';
       
       // Adiciona o menu na barra lateral
-      Plugin::registerClass('PluginGlpitypebotchatMenu');
-      Plugin::registerClass('PluginGlpitypebotchatConfig', ['addtabon' => ['Config']]);
+      Plugin::registerClass('PluginGlpitypebotchatConfig', [
+         'addtabon' => ['Config']
+      ]);
       
-      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
-         'config' => 'PluginGlpitypebotchatMenu'
-      ];
-      
-      // Adiciona a página de configuração
+      // Adiciona o item no menu de configuração
+      $PLUGIN_HOOKS['menu_entry']['glpitypebotchat'] = true;
       $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
+
+      // Hook para adicionar o chat em todas as páginas
+      $PLUGIN_HOOKS['display_central']['glpitypebotchat'] = true;
+      $PLUGIN_HOOKS['post_show_item']['glpitypebotchat'] = ['PluginGlpitypebotchatConfig', 'postShowItem'];
+      
+      // Hook para adicionar o menu
+      $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
+         'admin' => 'PluginGlpitypebotchatMenu'
+      ];
    }
 }
 
