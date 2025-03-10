@@ -21,6 +21,12 @@ foreach (glob(PLUGIN_GLPITYPEBOTCHAT_DIR . '/inc/*.class.php') as $file) {
 function plugin_glpitypebotchat_install() {
     global $DB;
 
+    // Verifica versão do PHP
+    if (version_compare(PHP_VERSION, '7.4.0', 'lt')) {
+        echo "Este plugin requer PHP >= 7.4.0";
+        return false;
+    }
+
     $migration = new Migration(PLUGIN_GLPITYPEBOTCHAT_VERSION);
     
     // Verifica se as tabelas existem

@@ -78,7 +78,7 @@ function plugin_version_glpitypebotchat() {
          ],
          'php' => [
             'min' => '7.4.0',
-            'max' => '8.2.0', // versão máxima testada
+            'max' => '8.4.0', // Atualizado para incluir PHP 8.3
             'params' => [ // extensões PHP necessárias
                'curl' => [
                   'required' => true
@@ -102,6 +102,8 @@ function plugin_glpitypebotchat_check_prerequisites() {
       return false;
    }
 
+   // Remove a verificação de versão máxima do PHP para permitir versões mais recentes
+   
    // Verifica extensões do PHP
    if (!extension_loaded('curl')) {
       echo "Este plugin requer a extensão PHP 'curl'";
