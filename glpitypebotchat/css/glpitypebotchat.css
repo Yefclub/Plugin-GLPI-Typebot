@@ -1,0 +1,90 @@
+.typebot-chat-icon {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #0d6efd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+    z-index: 9999;
+}
+
+.typebot-chat-icon:hover {
+    transform: scale(1.1);
+}
+
+.typebot-chat-icon.bottom-right {
+    bottom: 20px;
+    right: 20px;
+}
+
+.typebot-chat-icon.bottom-left {
+    bottom: 20px;
+    left: 20px;
+}
+
+.typebot-chat-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.typebot-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+
+.typebot-modal.active {
+    display: block;
+}
+
+.typebot-modal-content {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 400px;
+    height: 600px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+
+.typebot-modal-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.typebot-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.typebot-close:hover {
+    background: rgba(0,0,0,0.2);
+}
+
+/* Não mostrar em páginas de chamados */
+body.ticket .typebot-chat-icon {
+    display: none;
+} 
