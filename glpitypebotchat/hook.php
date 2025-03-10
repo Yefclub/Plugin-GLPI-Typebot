@@ -1,15 +1,16 @@
 <?php
 
+use Glpi\Plugin\Hooks;
+
 if (!defined('GLPI_ROOT')) {
-   include ("../../../inc/includes.php");
+   die("Sorry. You can't access this file directly");
 }
 
-if (!class_exists('PluginGlpitypebotchatConfig')) {
-    require_once(GLPI_ROOT . '/plugins/glpitypebotchat/inc/config.class.php');
-}
+include (GLPI_ROOT . "/inc/includes.php");
 
-if (!class_exists('PluginGlpitypebotchatMenu')) {
-    require_once(GLPI_ROOT . '/plugins/glpitypebotchat/inc/menu.class.php');
+// Carrega as classes necessárias
+foreach (glob(PLUGIN_GLPITYPEBOTCHAT_DIR . '/inc/*.class.php') as $file) {
+    require_once($file);
 }
 
 /**
@@ -18,8 +19,22 @@ if (!class_exists('PluginGlpitypebotchatMenu')) {
  * @return boolean
  */
 function plugin_glpitypebotchat_install() {
-    PluginGlpitypebotchatConfig::install();
-    PluginGlpitypebotchatMenu::addRightsToSession();
+    global $DB;
+
+    $migration = new Migration(PLUGIN_GLPITYPEBOTCHAT_VERSION);
+    
+    // Verifica se as tabelas existem
+    if (!$DB->tableExists('glpi_plugin_glpitypebotchat_configs')) {
+        try {
+            PluginGlpitypebotchatConfig::install($migration);
+            PluginGlpitypebotchatMenu::addRightsToSession();
+            $migration->executeMigration();
+            return true;
+        } catch (Exception $e) {
+            Toolbox::logError('Erro ao instalar o plugin:', $e->getMessage());
+            return false;
+        }
+    }
     return true;
 }
 
@@ -29,9 +44,23 @@ function plugin_glpitypebotchat_install() {
  * @return boolean
  */
 function plugin_glpitypebotchat_uninstall() {
-    PluginGlpitypebotchatConfig::uninstall();
-    PluginGlpitypebotchatMenu::removeRightsFromSession();
-    return true;
+    global $DB;
+    
+    try {
+        PluginGlpitypebotchatConfig::uninstall();
+        PluginGlpitypebotchatMenu::removeRightsFromSession();
+        
+        // Remove as tabelas do plugin
+        $tables = ['glpi_plugin_glpitypebotchat_configs'];
+        foreach ($tables as $table) {
+            $DB->query("DROP TABLE IF EXISTS `$table`");
+        }
+        
+        return true;
+    } catch (Exception $e) {
+        Toolbox::logError('Erro ao desinstalar o plugin:', $e->getMessage());
+        return false;
+    }
 }
 
 /**
@@ -40,7 +69,5 @@ function plugin_glpitypebotchat_uninstall() {
  * @return boolean
  */
 function plugin_glpitypebotchat_purge() {
-    PluginGlpitypebotchatConfig::uninstall();
-    PluginGlpitypebotchatMenu::removeRightsFromSession();
-    return true;
+    return plugin_glpitypebotchat_uninstall();
 } 

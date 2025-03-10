@@ -135,7 +135,7 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         echo "</div>";
         
         // Formulário de configuração
-        echo "<form name='form' action='../plugins/glpitypebotchat/front/config.form.php' method='post' class='mb-4'>";
+        echo "<form name='form' action='" . Plugin::getWebDir('glpitypebotchat', true) . "/front/config.form.php' method='post' class='mb-4'>";
         echo "<div class='card border-secondary mb-4'>";
         echo "<div class='card-header bg-secondary text-white'>";
         echo "<h4 class='m-0'>" . __('Configurações Básicas', 'glpitypebotchat') . "</h4>";
