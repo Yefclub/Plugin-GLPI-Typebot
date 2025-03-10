@@ -7,9 +7,11 @@
     <description>
         <short>
             <pt_BR>Plugin para integração do Typebot com GLPI</pt_BR>
+            <en>Plugin for Typebot integration with GLPI</en>
         </short>
         <long>
             <pt_BR>Este plugin permite a integração do Typebot com o GLPI, adicionando um chat interativo na interface.</pt_BR>
+            <en>This plugin allows integration of Typebot with GLPI, adding an interactive chat to the interface.</en>
         </long>
     </description>
     <homepage>https://taskivus.com</homepage>
@@ -27,6 +29,7 @@
     </versions>
     <langs>
         <lang>pt_BR</lang>
+        <lang>en_US</lang>
     </langs>
     <license>GPL v3+</license>
     <tags>
@@ -35,6 +38,11 @@
             <tag>Typebot</tag>
             <tag>Suporte</tag>
         </pt_BR>
+        <en>
+            <tag>Chat</tag>
+            <tag>Typebot</tag>
+            <tag>Support</tag>
+        </en>
     </tags>
     <screenshots>
         <screenshot>https://taskivus.com/plugins/glpitypebotchat/screenshots/chat.png</screenshot>

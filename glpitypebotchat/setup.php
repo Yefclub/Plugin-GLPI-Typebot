@@ -17,12 +17,12 @@ define('PLUGIN_GLPITYPEBOTCHAT_WEB_DIR', Plugin::getWebDir('glpitypebotchat'));
 
 /**
  * Get the name and the version of the plugin
- * 
+ * IMPORTANTE: O nome do plugin deve ser retornado sem tradução
  * @return array
  */
 function plugin_version_glpitypebotchat() {
    return [
-      'name'           => 'GLPI Typebot Chat',
+      'name'           => 'GLPI Typebot Chat', // Nome sem tradução
       'version'        => PLUGIN_GLPITYPEBOTCHAT_VERSION,
       'author'         => 'Taskivus',
       'license'        => 'GPLv3+',
@@ -31,16 +31,11 @@ function plugin_version_glpitypebotchat() {
          'glpi' => [
             'min' => PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI,
             'max' => PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI,
-            'dev' => false,
-            'plugins' => []
          ],
          'php' => [
             'min' => '7.4.0',
-            'max' => '8.4.0',
-            'params' => [
-               'curl' => [
-                  'required' => true
-               ]
+            'extensions' => [
+               'curl',
             ]
          ]
       ]
@@ -49,23 +44,25 @@ function plugin_version_glpitypebotchat() {
 
 /**
  * Check pre-requisites before install
- * 
  * @return boolean
  */
 function plugin_glpitypebotchat_check_prerequisites() {
+   // Verifica versão do PHP
    if (version_compare(PHP_VERSION, '7.4.0', 'lt')) {
       echo "Este plugin requer PHP >= 7.4.0";
       return false;
    }
 
+   // Verifica extensão curl
    if (!extension_loaded('curl')) {
-      echo "Este plugin requer a extensão PHP 'curl'";
+      echo "Este plugin requer a extensão PHP curl";
       return false;
    }
 
+   // Verifica versão do GLPI
    if (version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, 'lt')
       || version_compare(GLPI_VERSION, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI, 'ge')) {
-      echo Plugin::messageIncompatible('core', PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI, PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI);
+      echo "Este plugin requer GLPI >= " . PLUGIN_GLPITYPEBOTCHAT_MIN_GLPI . " e < " . PLUGIN_GLPITYPEBOTCHAT_MAX_GLPI;
       return false;
    }
    
@@ -74,47 +71,37 @@ function plugin_glpitypebotchat_check_prerequisites() {
 
 /**
  * Check configuration
- * 
- * @param boolean $verbose Exibir mensagens detalhadas
  * @return boolean
  */
-function plugin_glpitypebotchat_check_config($verbose = false) {
-   if (true) {
-      return true;
-   }
-   
-   if ($verbose) {
-      echo __('Plugin instalado mas não configurado', 'glpitypebotchat');
-   }
-   return false;
+function plugin_glpitypebotchat_check_config() {
+   return true;
 }
 
 /**
- * Init the hooks of the plugins -Needed
+ * Initialize the plugin
  */
 function plugin_init_glpitypebotchat() {
    global $PLUGIN_HOOKS;
 
-   $PLUGIN_HOOKS[Hooks::CSRF_COMPLIANT]['glpitypebotchat'] = true;
+   // CSRF compliance
+   $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
 
+   // Registra as classes
+   Plugin::registerClass('PluginGlpitypebotchatConfig');
+   
+   // Menu Configuration
+   if (Session::haveRight('config', UPDATE)) {
+      $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
+   }
+   
+   // Adiciona CSS e JavaScript apenas se o usuário estiver logado
    if (Session::getLoginUserID()) {
-      // Registra as classes
-      Plugin::registerClass('PluginGlpitypebotchatConfig', [
-         'addtabon' => ['Config']
-      ]);
-
-      if (Session::haveRight('config', UPDATE)) {
-         // Adiciona o item no menu de configuração
-         $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
-         
-         // Hook para adicionar o menu
-         $PLUGIN_HOOKS['menu_toadd']['glpitypebotchat'] = [
-            'admin' => 'PluginGlpitypebotchatMenu'
-         ];
-      }
-
-      // Hook para adicionar CSS e JavaScript
-      $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = 'css/glpitypebotchat.css';
+      // Hook para adicionar CSS
+      $PLUGIN_HOOKS['add_css']['glpitypebotchat'] = [
+         'css/glpitypebotchat.css'
+      ];
+      
+      // Hook para adicionar JavaScript
       $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'] = [
          'js/glpitypebotchat.js',
          'js/navbar.js'
