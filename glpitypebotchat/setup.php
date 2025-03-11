@@ -78,7 +78,7 @@ function plugin_glpitypebotchat_check_config() {
  * Initialize the plugin
  */
 function plugin_init_glpitypebotchat() {
-   global $PLUGIN_HOOKS, $CFG_GLPI;
+   global $PLUGIN_HOOKS, $CFG_GLPI, $DB;
 
    // CSRF compliance
    $PLUGIN_HOOKS['csrf_compliant']['glpitypebotchat'] = true;
@@ -91,8 +91,11 @@ function plugin_init_glpitypebotchat() {
       $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
    }
    
-   // Adiciona CSS e JavaScript apenas se o usuário estiver logado
-   if (Session::getLoginUserID()) {
+   // Verifica se a tabela de configuração existe antes de carregar os recursos
+   $table_exists = $DB->tableExists('glpi_plugin_glpitypebotchat_configs');
+   
+   // Adiciona CSS e JavaScript apenas se o usuário estiver logado e a tabela existir
+   if (Session::getLoginUserID() && $table_exists) {
       // Hook para adicionar CSS
       $PLUGIN_HOOKS['add_css']['glpitypebotchat'][] = 'css/glpitypebotchat.css';
       

@@ -75,6 +75,16 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
     static function getConfig() {
         global $DB;
         
+        // Verifica se a tabela existe
+        if (!$DB->tableExists('glpi_plugin_glpitypebotchat_configs')) {
+            return [
+                'typebot_url' => '',
+                'icon_position' => 'bottom-right',
+                'is_active' => 0, // Desativa o chat se a tabela não existir
+                'welcome_message' => 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
+            ];
+        }
+        
         $config = new self();
         $config->getFromDB(1);
         

@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Verifica se a função openTypebotChat existe
+    // Se não existir, não adiciona o botão na barra de navegação
+    if (typeof window.openTypebotChat !== 'function') {
+        console.log('Função openTypebotChat não encontrada, botão de chat não será adicionado');
+        return;
+    }
+
     // Função para tentar encontrar a barra de navegação
     function findNavbar() {
         return document.querySelector('.navbar-nav') || 

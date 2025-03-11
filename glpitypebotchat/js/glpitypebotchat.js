@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(config => {
-            if (!config.is_active || !config.typebot_url) {
+            // Verifica se o chat está ativo e se a URL do Typebot está configurada
+            if (!config || !config.is_active || !config.typebot_url) {
                 console.log('Chat desativado ou URL não configurada');
                 return;
             }
@@ -88,5 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Erro ao carregar configurações do Typebot:', error);
+            // Não faz nada em caso de erro, apenas registra no console
         });
 }); 

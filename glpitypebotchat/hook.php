@@ -41,9 +41,20 @@ function plugin_glpitypebotchat_install() {
         $DB->insert($table, [
             'typebot_url' => '',
             'icon_position' => 'bottom-right',
-            'is_active' => 1,
+            'is_active' => 0, // Desativa por padrão até que seja configurado
             'welcome_message' => 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
         ]);
+    } else {
+        // Verifica se a coluna welcome_message existe
+        if (!$DB->fieldExists($table, 'welcome_message')) {
+            $query = "ALTER TABLE `$table` ADD COLUMN `welcome_message` text DEFAULT NULL";
+            $DB->query($query) or die($DB->error());
+            
+            // Atualiza valores existentes
+            $DB->update($table, [
+                'welcome_message' => 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
+            ], ['id' => 1]);
+        }
     }
     
     // Registra o plugin no GLPI
