@@ -6,22 +6,14 @@ if (!defined('GLPI_ROOT')) {
 
 /**
  * Função para adicionar recursos ao header
+ * Simplificada para minimizar a interferência com o GLPI
  */
 function plugin_glpitypebotchat_add_head() {
-    global $CFG_GLPI;
-    
-    // Verifica se o usuário está autenticado
+    // Verifica se o usuário está realmente autenticado
     if (!isset($_SESSION['glpiID']) || $_SESSION['glpiID'] <= 0) {
         return '';
     }
     
-    $out = '';
-    
-    // Adiciona preload para fontes
-    $out .= '<link rel="preload" href="' . $CFG_GLPI["root_doc"] . '/public/lib/fontawesome/css/all.min.css" as="style">';
-    
-    // Adiciona CSS do FontAwesome
-    $out .= '<link rel="stylesheet" type="text/css" href="' . $CFG_GLPI["root_doc"] . '/public/lib/fontawesome/css/all.min.css">';
-    
-    return $out;
+    // Retorna apenas elementos básicos sem manipular outras partes do GLPI
+    return ''; // Removido para evitar conflitos com o sistema
 } 
