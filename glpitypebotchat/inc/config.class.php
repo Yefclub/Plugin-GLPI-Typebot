@@ -86,12 +86,16 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         }
         
         $config = new self();
-        $config->getFromDB(1);
+        
+        // Use getEmpty se não conseguir carregar do banco
+        if (!$config->getFromDB(1)) {
+            $config->getEmpty();
+        }
         
         return [
             'typebot_url' => $config->fields['typebot_url'] ?? '',
             'icon_position' => $config->fields['icon_position'] ?? 'bottom-right',
-            'is_active' => $config->fields['is_active'] ?? 1,
+            'is_active' => $config->fields['is_active'] ?? 0,
             'welcome_message' => $config->fields['welcome_message'] ?? 'Bem-vindo ao Chat do GLPI! Como posso ajudar?'
         ];
     }
@@ -231,5 +235,33 @@ class PluginGlpitypebotchatConfig extends CommonDBTM {
         
         echo "</div>";
         echo "</div>";
+    }
+
+    /**
+     * Método obrigatório para verificar permissões
+     */
+    static function canCreate() {
+        return Session::haveRight(self::$rightname, UPDATE);
+    }
+    
+    /**
+     * Método obrigatório para verificar permissões
+     */
+    static function canView() {
+        return Session::haveRight(self::$rightname, READ);
+    }
+    
+    /**
+     * Método obrigatório para verificar permissões
+     */
+    static function canUpdate() {
+        return Session::haveRight(self::$rightname, UPDATE);
+    }
+    
+    /**
+     * Método obrigatório para verificar permissões
+     */
+    static function canDelete() {
+        return Session::haveRight(self::$rightname, UPDATE);
     }
 } 

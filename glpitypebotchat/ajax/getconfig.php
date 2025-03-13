@@ -2,8 +2,10 @@
 
 include ("../../../inc/includes.php");
 
-// Permite acesso de qualquer origem para este endpoint
-header('Access-Control-Allow-Origin: *');
+// Verifica se o usuário está autenticado
+Session::checkLoginUser();
+
+// Configurações de cabeçalho
 header('Content-Type: application/json');
 
 global $DB;

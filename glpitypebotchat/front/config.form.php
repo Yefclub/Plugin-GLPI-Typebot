@@ -2,16 +2,17 @@
 
 include ("../../../inc/includes.php");
 
+// Verifica se o usuário tem permissão para acessar a configuração
 Session::checkRight("config", UPDATE);
 
 // Se não estiver logado, redireciona para a página de login
-if (!isset($_SESSION['glpiactiveprofile'])) {
+if (!Session::getLoginUserID()) {
     Html::redirect($CFG_GLPI['root_doc'] . "/index.php");
     die;
 }
 
+// Verifica se o plugin está ativado
 $plugin = new Plugin();
-
 if (!$plugin->isActivated('glpitypebotchat')) {
     Html::displayRightError();
     die;

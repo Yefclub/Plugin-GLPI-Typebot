@@ -8,6 +8,13 @@ if (!defined('GLPI_ROOT')) {
  * Função para adicionar recursos ao header
  */
 function plugin_glpitypebotchat_add_head() {
+    global $CFG_GLPI;
+    
+    // Verifica se o usuário está autenticado
+    if (!isset($_SESSION['glpiID']) || $_SESSION['glpiID'] <= 0) {
+        return '';
+    }
+    
     $out = '';
     
     // Adiciona preload para fontes

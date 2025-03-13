@@ -86,31 +86,34 @@ function plugin_init_glpitypebotchat() {
    // Registra as classes
    Plugin::registerClass('PluginGlpitypebotchatConfig');
    
-   // Menu Configuration
+   // Menu Configuration - apenas adicionar se o usuário tiver permissão
    if (Session::haveRight('config', UPDATE)) {
       $PLUGIN_HOOKS['config_page']['glpitypebotchat'] = 'front/config.form.php';
    }
    
-   // Verifica se a tabela de configuração existe antes de carregar os recursos
-   $table_exists = $DB->tableExists('glpi_plugin_glpitypebotchat_configs');
-   
-   // Adiciona CSS e JavaScript apenas se o usuário estiver logado e a tabela existir
-   if (Session::getLoginUserID() && $table_exists) {
-      // Hook para adicionar CSS
-      $PLUGIN_HOOKS['add_css']['glpitypebotchat'][] = 'css/glpitypebotchat.css';
+   // Verificar se o usuário está autenticado antes de carregar recursos
+   if (isset($_SESSION['glpiID']) && $_SESSION['glpiID'] > 0) {
+      // Verifica se a tabela de configuração existe antes de carregar os recursos
+      $table_exists = $DB->tableExists('glpi_plugin_glpitypebotchat_configs');
       
-      // Hook para adicionar JavaScript
-      $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'][] = 'js/glpitypebotchat.js';
-      
-      // Adiciona o JavaScript da barra de navegação apenas em páginas específicas
-      if (!isset($_REQUEST['ajax'])) {
-         $PLUGIN_HOOKS['javascript']['glpitypebotchat'][] = [
-            'path' => 'js/navbar.js',
-            'options' => ['defer' => true]
-         ];
+      // Adiciona CSS e JavaScript apenas se o usuário estiver logado e a tabela existir
+      if ($table_exists) {
+         // Hook para adicionar CSS
+         $PLUGIN_HOOKS['add_css']['glpitypebotchat'][] = 'css/glpitypebotchat.css';
+         
+         // Hook para adicionar JavaScript
+         $PLUGIN_HOOKS['add_javascript']['glpitypebotchat'][] = 'js/glpitypebotchat.js';
+         
+         // Adiciona o JavaScript da barra de navegação apenas em páginas específicas
+         if (!isset($_REQUEST['ajax'])) {
+            $PLUGIN_HOOKS['javascript']['glpitypebotchat'][] = [
+               'path' => 'js/navbar.js',
+               'options' => ['defer' => true]
+            ];
+         }
+         
+         // Adiciona o hook para o header, para garantir que os recursos sejam carregados corretamente
+         $PLUGIN_HOOKS['add_head']['glpitypebotchat'] = 'plugin_glpitypebotchat_add_head';
       }
-      
-      // Adiciona o hook para o header, para garantir que os recursos sejam carregados corretamente
-      $PLUGIN_HOOKS['add_head']['glpitypebotchat'] = 'plugin_glpitypebotchat_add_head';
    }
 } 

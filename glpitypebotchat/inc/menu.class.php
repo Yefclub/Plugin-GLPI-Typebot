@@ -15,7 +15,7 @@ class PluginGlpitypebotchatMenu extends CommonGLPI {
       global $CFG_GLPI;
       
       $menu = [];
-      if (Config::canUpdate()) {
+      if (Session::haveRight('config', UPDATE)) {
          $menu['title'] = self::getMenuName();
          $menu['page']  = '/plugins/glpitypebotchat/front/config.form.php';
          $menu['icon']  = 'fas fa-comments';
@@ -34,7 +34,7 @@ class PluginGlpitypebotchatMenu extends CommonGLPI {
    }
    
    static function addRightsToSession() {
-      if (Config::canUpdate()) {
+      if (Session::haveRight('config', UPDATE)) {
          $_SESSION['glpimenu']['admin']['types']['PluginGlpitypebotchatMenu'] = 'PluginGlpitypebotchatMenu';
       }
    }
