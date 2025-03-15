@@ -10,6 +10,7 @@ Este plugin adiciona um chat interativo do Typebot ao GLPI, permitindo uma melho
 - Configurações simples através da interface do GLPI
 - Suporte a múltiplas posições do ícone de chat
 - Não aparece na tela de chamados
+- **Totalmente isolado** - não interfere no funcionamento normal do GLPI
 
 ## Requisitos
 
@@ -37,6 +38,28 @@ Este plugin adiciona um chat interativo do Typebot ao GLPI, permitindo uma melho
 
 Após a configuração, o ícone do chat aparecerá na posição selecionada em todas as páginas do GLPI, exceto na tela de chamados.
 Os usuários podem clicar no ícone para abrir o chat em um modal e interagir com o bot.
+
+## Como Funciona
+
+O plugin funciona de forma isolada, garantindo que não interfira no funcionamento normal do GLPI:
+
+1. Adiciona um ícone flutuante na tela que, quando clicado, abre o chat em um modal
+2. Carrega o iframe do Typebot dentro do modal
+3. Adiciona um botão na barra de navegação para acesso rápido ao chat
+4. Todo o código é encapsulado em funções autoexecutáveis (IIFE) para evitar poluição do escopo global
+5. Utiliza CSS com namespaces específicos para evitar conflitos com os estilos do GLPI
+
+## Resolução de Problemas
+
+Se o chat não aparecer:
+- Verifique se o plugin está ativo nas configurações
+- Certifique-se de que a URL do Typebot está corretamente configurada
+- Verifique se não há erros de JavaScript no console do navegador
+
+Se o plugin interferir no funcionamento do GLPI:
+- Desative temporariamente o plugin
+- Verifique a versão do GLPI e certifique-se de que é compatível
+- Entre em contato com o suporte
 
 ## Suporte
 

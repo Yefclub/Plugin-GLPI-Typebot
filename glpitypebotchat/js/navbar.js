@@ -1,5 +1,13 @@
 // Script isolado para adicionar o botão do Typebot à barra de navegação
 (function() {
+    // Verifica se o script já foi executado para evitar duplicação
+    if (window.typebotNavbarInitialized) {
+        return;
+    }
+
+    // Marca como inicializado
+    window.typebotNavbarInitialized = true;
+
     // Executa apenas quando o DOM estiver completamente carregado
     document.addEventListener('DOMContentLoaded', function() {
         try {
@@ -10,82 +18,68 @@
                 return;
             }
 
-            // Função para tentar encontrar a barra de navegação
+            // Função para encontrar a barra de navegação de forma segura
             function findNavbar() {
-                return document.querySelector('.navbar-nav') || 
-                       document.querySelector('#navbar-menu .nav') ||
-                       document.querySelector('.navigation-menu');
+                // Busca apenas os seletores específicos para minimizar o impacto
+                const elements = [
+                    document.querySelector('#navbar-menu .navbar-nav'),
+                    document.querySelector('.navbar-nav'),
+                    document.querySelector('#c_menu .primary-nav')
+                ];
+                
+                // Retorna o primeiro elemento encontrado
+                return elements.find(el => el !== null);
             }
 
-            // Verifica se o botão já existe
+            // Verifica se o botão já existe para evitar duplicação
             if (document.querySelector('#typebot-navbar-button')) {
+                console.log('Botão do Typebot já existe no DOM');
                 return;
             }
 
             // Tenta encontrar a barra de navegação
             const navbar = findNavbar();
             if (!navbar) {
-                console.log('Barra de navegação ainda não disponível, tentando novamente...');
-                // Tenta novamente após um pequeno delay
-                setTimeout(function() {
-                    const retryNavbar = findNavbar();
-                    if (!retryNavbar) {
-                        console.log('Barra de navegação não encontrada após retry');
-                        return;
-                    }
-                    initializeButton(retryNavbar);
-                }, 1000);
-                return;
+                console.log('Barra de navegação não encontrada');
+                return; // Não faz mais tentativas para evitar impactos
             }
 
-            initializeButton(navbar);
+            // Adiciona o botão apenas uma vez
+            addButton(navbar);
         } catch (e) {
             console.error('Erro ao adicionar botão Typebot à barra de navegação:', e);
         }
     });
 
-    function initializeButton(navbar) {
-        // Cria o botão
-        const navItem = document.createElement('li');
-        navItem.className = 'nav-item';
-        
+    function addButton(navbar) {
+        // Verifica o tema do GLPI para aplicar os estilos apropriados
+        const isDarkTheme = document.body.classList.contains('dark-mode');
+        const buttonClass = isDarkTheme ? 
+            'btn btn-sm btn-outline-secondary mx-1' : 
+            'btn btn-sm btn-outline-secondary mx-1';
+
+        // Cria o botão como um link
         const button = document.createElement('a');
-        button.className = 'btn btn-sm btn-icon btn-outline-secondary mx-1';
+        button.href = '#';
+        button.className = buttonClass;
         button.id = 'typebot-navbar-button';
         button.title = 'Abrir Chat';
         button.setAttribute('data-bs-toggle', 'tooltip');
         button.setAttribute('data-bs-placement', 'bottom');
         button.innerHTML = '<i class="fas fa-comments"></i>';
         
+        // Adiciona o evento de clique de forma segura
         button.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             if (typeof window.openTypebotChat === 'function') {
                 window.openTypebotChat();
-            } else {
-                console.log('Função openTypebotChat não encontrada');
             }
         });
         
-        navItem.appendChild(button);
+        // Adiciona o botão ao navbar como último item
+        navbar.appendChild(button);
         
-        // Adiciona o botão à barra de navegação
-        const helpItem = document.querySelector('.navbar-nav .nav-link[title="Ajuda"]');
-        if (helpItem && helpItem.parentNode) {
-            navbar.insertBefore(navItem, helpItem.parentNode);
-        } else {
-            navbar.appendChild(navItem);
-        }
-        
-        // Inicializa o tooltip
-        try {
-            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
-                });
-            }
-        } catch (e) {
-            console.log('Tooltip não inicializado:', e);
-        }
+        console.log('Botão do Typebot adicionado com sucesso');
     }
 })(); 

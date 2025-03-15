@@ -113,4 +113,29 @@ function plugin_init_glpitypebotchat() {
          $PLUGIN_HOOKS['add_head']['glpitypebotchat'] = 'plugin_glpitypebotchat_add_head';
       }
    }
+}
+
+/**
+ * Função para adicionar conteúdo ao cabeçalho HTML 
+ * Implementado de forma isolada para evitar conflitos
+ * 
+ * @return string
+ */
+function plugin_glpitypebotchat_add_head() {
+    global $CFG_GLPI, $DB;
+    
+    // Verifica se o usuário está autenticado
+    if (!isset($_SESSION['glpiID']) || $_SESSION['glpiID'] <= 0) {
+        return "";
+    }
+    
+    // Verifica se estamos em um contexto AJAX (evita carregar em requisições AJAX)
+    if (isset($_REQUEST['ajax'])) {
+        return "";
+    }
+    
+    // Retorna apenas o script de inicialização do botão na barra de navegação
+    // Sem modificar o comportamento global do GLPI
+    return '<script type="text/javascript" src="' . 
+           $CFG_GLPI['root_doc'] . '/plugins/glpitypebotchat/js/navbar.js" defer></script>';
 } 
